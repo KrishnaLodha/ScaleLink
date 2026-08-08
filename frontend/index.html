@@ -370,9 +370,9 @@ async function shortenUrl() {
             throw new Error(data.message || 'Failed to shorten URL');
         }
         // Show result
-        const shortUrl = data.shortUrl;
-        document.getElementById('resultLink').href = shortUrl;
-        document.getElementById('resultLink').textContent = shortUrl;
+        const displayShortUrl = data.shortUrl.replace(/^http:\/\/localhost:8080/, API);
+        document.getElementById('resultLink').href = displayShortUrl;
+        document.getElementById('resultLink').textContent = displayShortUrl;
         document.getElementById('resultBox').style.display = 'block';
         document.getElementById('urlInput').value = '';
         document.getElementById('aliasInput').value = '';
@@ -401,15 +401,18 @@ async function loadLinks() {
             return;
         }
 
-        list.innerHTML = data.content.map(link => `
+        list.innerHTML = data.content.map(link => {
+            const shortUrl = link.shortUrl.replace(/^http:\/\/localhost:8080/, API);
+            return `
             <div class="link-card">
                 <div class="link-top">
-                    <a class="link-short" href="${link.shortUrl}" target="_blank">${link.shortUrl}</a>
+                    <a class="link-short" href="${shortUrl}" target="_blank">${shortUrl}</a>
                     <div class="link-clicks"><strong>${link.clickCount}</strong> clicks</div>
                 </div>
                 <div class="link-original">${link.originalUrl}</div>
             </div>
-        `).join('');
+            `;
+        }).join('');
     } catch (e) { console.error(e); }
 }
 
