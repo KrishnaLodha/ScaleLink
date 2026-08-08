@@ -200,6 +200,13 @@
             <button type="submit" class="btn-primary">Create Account</button>
             <div class="error-msg" id="regError"></div>
         </form>
+
+        <div style="margin-top:24px; padding-top:16px; border-top:1px solid rgba(255,255,255,0.06);">
+            <div class="form-group" style="margin-bottom:0">
+                <label style="font-size:11px; color:#71717a">Backend Server URL:</label>
+                <input type="url" id="apiUrlInput" style="font-size:12px; padding:6px 10px;" placeholder="e.g. https://scalelink-1.onrender.com" onchange="updateApiUrl(this.value)">
+            </div>
+        </div>
     </div>
 </div>
 
@@ -242,9 +249,22 @@
 <div class="toast" id="toast"></div>
 
 <script>
-const API = localStorage.getItem('sl_api_url') || (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:8080' : 'https://scalelink-1.onrender.com');
+let API = localStorage.getItem('sl_api_url') || (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:8080' : 'https://scalelink-1.onrender.com');
 let token = localStorage.getItem('sl_token');
 let username = localStorage.getItem('sl_username');
+
+document.addEventListener('DOMContentLoaded', () => {
+    const input = document.getElementById('apiUrlInput');
+    if (input) input.value = API;
+});
+
+function updateApiUrl(val) {
+    if (!val) return;
+    val = val.replace(/\/+$/, '');
+    localStorage.setItem('sl_api_url', val);
+    API = val;
+    showToast('Backend URL updated! ⚙️');
+}
 
 // Check if already logged in
 if (token) showApp();
