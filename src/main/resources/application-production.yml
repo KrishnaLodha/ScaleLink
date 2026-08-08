@@ -1,0 +1,35 @@
+spring:
+  config:
+    activate:
+      on-profile: production
+
+server:
+  shutdown: graceful
+
+logging:
+  level:
+    root: WARN
+    com.scalink: INFO
+
+management:
+  endpoint:
+    health:
+      show-details: when_authorized
+
+scalink:
+  rate-limit:
+    enabled: true
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      redis:
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10s
+        sliding-window-size: 20
+        minimum-number-of-calls: 10
+      database:
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 15s
+        sliding-window-size: 20
+        minimum-number-of-calls: 10

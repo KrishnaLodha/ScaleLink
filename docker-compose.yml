@@ -1,0 +1,56 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: scalink-postgres
+    environment:
+      POSTGRES_DB: scalink
+      POSTGRES_USER: scalink
+      POSTGRES_PASSWORD: scalink
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U scalink -d scalink"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: scalink-redis
+    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  app:
+    build: .
+    container_name: scalink-app
+    ports:
+      - "8080:8080"
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: scalink
+      DB_USER: scalink
+      DB_PASSWORD: scalink
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      SCALELINK_BASE_URL: http://localhost:8080
+      JWT_SECRET: scalink-dev-secret-key-must-be-at-least-256-bits-long-for-hs256
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  redis_data:

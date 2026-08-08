@@ -1,0 +1,25 @@
+# Production Dockerfile — optimized multi-stage build
+FROM eclipse-temurin:21-jdk-alpine AS builder
+WORKDIR /app
+COPY pom.xml .
+COPY src ./src
+RUN apk add --no-cache maven && \
+    mvn clean package -DskipTests -q && \
+    mv target/scalink-*.jar app.jar
+
+FROM eclipse-temurin:21-jre-alpine AS runtime
+WORKDIR /app
+RUN apk add --no-cache wget && \
+    addgroup -S scalink && adduser -S scalink -G scalink && \
+    rm -rf /var/cache/apk/*
+USER scalink
+COPY --from=builder /app/app.jar app.jar
+
+EXPOSE 8080
+ENV SPRING_PROFILES_ACTIVE=production \
+    JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75 -XX:+ExitOnOutOfMemoryError"
+
+HEALTHCHECK --interval=30s --timeout=3s --start-period=45s --retries=3 \
+  CMD wget -qO- http://localhost:8080/actuator/health/liveness || exit 1
+
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]

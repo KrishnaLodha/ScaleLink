@@ -1,0 +1,94 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  IMAGE_NAME: scalink
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    outputs:
+      image_tag: ${{ steps.meta.outputs.tags }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build application
+        run: mvn clean package -DskipTests -B
+
+      - name: Set image metadata
+        id: meta
+        run: |
+          TAG="${GITHUB_SHA::8}"
+          echo "tags=scalink:${TAG}" >> $GITHUB_OUTPUT
+
+      - name: Build Docker image
+        run: docker build -f Dockerfile.prod -t scalink:${GITHUB_SHA::8} -t scalink:latest .
+
+      - name: Save Docker image
+        run: docker save scalink:latest | gzip > scalink-image.tar.gz
+
+      - name: Upload Docker image artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-image
+          path: scalink-image.tar.gz
+          retention-days: 3
+
+  deploy-blue-green:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download Docker image
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-image
+
+      - name: Deploy to EC2 (blue-green)
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+        run: |
+          if [ -z "$EC2_HOST" ]; then
+            echo "EC2_HOST not configured — skipping deployment"
+            exit 0
+          fi
+          echo "$EC2_SSH_KEY" > deploy_key.pem
+          chmod 600 deploy_key.pem
+          scp -i deploy_key.pem -o StrictHostKeyChecking=no scalink-image.tar.gz ec2-user@${EC2_HOST}:/tmp/
+          ssh -i deploy_key.pem -o StrictHostKeyChecking=no ec2-user@${EC2_HOST} << 'ENDSSH'
+            set -e
+            docker load < /tmp/scalink-image.tar.gz
+            # Blue-green: deploy new container, health check, swap
+            ACTIVE=$(docker ps --filter name=scalink-green --format '{{.Names}}' | head -1)
+            if [ "$ACTIVE" = "scalink-green" ]; then
+              NEXT=scalink-blue
+              OLD=scalink-green
+            else
+              NEXT=scalink-green
+              OLD=scalink-blue
+            fi
+            docker run -d --name $NEXT --env-file /opt/scalink/.env \
+              -p 8081:8080 --restart unless-stopped scalink:latest
+            sleep 15
+            curl -sf http://localhost:8081/actuator/health/liveness || exit 1
+            docker stop $OLD 2>/dev/null || true
+            docker rm $OLD 2>/dev/null || true
+            # Point nginx to new container
+            sudo sed -i 's/proxy_pass .*/proxy_pass http://127.0.0.1:8081;/' /etc/nginx/sites-available/scalink
+            sudo nginx -s reload
+          ENDSSH
