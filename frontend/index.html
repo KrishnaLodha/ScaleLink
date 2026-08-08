@@ -242,7 +242,7 @@
 <div class="toast" id="toast"></div>
 
 <script>
-const API = 'http://localhost:8080';
+const API = localStorage.getItem('sl_api_url') || (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:8080' : 'https://scalelink-1.onrender.com');
 let token = localStorage.getItem('sl_token');
 let username = localStorage.getItem('sl_username');
 
