@@ -10,8 +10,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-@Getter
 public class SecurityUser implements UserDetails {
+    public Long getId() { return id; }
+    public String getEmail() { return email; }
+
 
     private final Long id;
     private final String username;

@@ -17,11 +17,6 @@ import java.time.Instant;
 
 @Entity
 @Table(name = "users")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class User {
 
     @Id
@@ -41,13 +36,42 @@ public class User {
     private Instant createdAt;
 
     @Column(nullable = false, length = 20)
-    @Builder.Default
-    private String role = "USER";
+        private String role = "USER";
 
     @PrePersist
     void onCreate() {
         if (createdAt == null) {
             createdAt = Instant.now();
         }
+    }
+    public Long getId() { return this.id; }
+    public String getUsername() { return this.username; }
+    public String getEmail() { return this.email; }
+    public String getPasswordHash() { return this.passwordHash; }
+    public Instant getCreatedAt() { return this.createdAt; }
+    public String getRole() { return this.role; }
+    public void setId(Long id) { this.id = id; }
+    public void setUsername(String username) { this.username = username; }
+    public void setEmail(String email) { this.email = email; }
+    public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
+    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
+    public void setRole(String role) { this.role = role; }
+    public User() {}
+    public User(Long id, String username, String email, String passwordHash, Instant createdAt, String role) { this.id = id; this.username = username; this.email = email; this.passwordHash = passwordHash; this.createdAt = createdAt; this.role = role; }
+    public static UserBuilder builder() { return new UserBuilder(); }
+    public static class UserBuilder {
+        private Long id;
+        public UserBuilder id(Long id) { this.id = id; return this; }
+        private String username;
+        public UserBuilder username(String username) { this.username = username; return this; }
+        private String email;
+        public UserBuilder email(String email) { this.email = email; return this; }
+        private String passwordHash;
+        public UserBuilder passwordHash(String passwordHash) { this.passwordHash = passwordHash; return this; }
+        private Instant createdAt;
+        public UserBuilder createdAt(Instant createdAt) { this.createdAt = createdAt; return this; }
+        private String role = "USER";
+        public UserBuilder role(String role) { this.role = role; return this; }
+        public User build() { return new User(id, username, email, passwordHash, createdAt, role); }
     }
 }

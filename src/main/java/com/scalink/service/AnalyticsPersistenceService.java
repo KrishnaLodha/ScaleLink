@@ -47,4 +47,5 @@ public class AnalyticsPersistenceService {
     public void recoverPersistClick(Exception ex, ClickEvent event) {
         log.error("Analytics write failed after retries for urlId={}", event.getUrlId(), ex);
     }
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(AnalyticsPersistenceService.class);
 }

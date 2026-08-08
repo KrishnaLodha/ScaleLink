@@ -14,10 +14,11 @@ import java.io.IOException;
  * Request filter that enforces distributed rate limits before controller execution.
  * Placed after JWT authentication so tier (anonymous/authenticated/admin) is known.
  */
-@Slf4j
-@Profile("!test")
-@RequiredArgsConstructor
-public class RateLimitFilter extends OncePerRequestFilter {
+@org.springframework.context.annotation.Profile("!test")
+public class RateLimitFilter extends org.springframework.web.filter.OncePerRequestFilter {
+    public RateLimitFilter(RateLimitService rateLimitService) {
+        this.rateLimitService = rateLimitService;
+    }
 
     private final RateLimitService rateLimitService;
 
@@ -38,4 +39,5 @@ public class RateLimitFilter extends OncePerRequestFilter {
                 || path.startsWith("/api-docs")
                 || path.startsWith("/v3/api-docs");
     }
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(RateLimitFilter.class);
 }

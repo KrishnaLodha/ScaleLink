@@ -55,4 +55,5 @@ public class ShortCodeGenerator {
     public void handleIntegrityViolation(DataIntegrityViolationException ex) {
         throw new DuplicateResourceException("Short code or custom alias already exists");
     }
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ShortCodeGenerator.class);
 }

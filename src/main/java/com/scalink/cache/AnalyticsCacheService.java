@@ -57,4 +57,5 @@ public class AnalyticsCacheService {
     public void evictDashboard(Long userId) {
         redisTemplate.delete(CacheKeys.dashboard(userId));
     }
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(AnalyticsCacheService.class);
 }

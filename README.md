@@ -1,6 +1,6 @@
 # ScaleLink
 
-Production-grade distributed URL shortening platform — interview-ready system design project.
+Production-grade distributed URL shortening platform
 
 ## Documentation
 
@@ -8,7 +8,7 @@ Production-grade distributed URL shortening platform — interview-ready system 
 |----------|-------------|
 | [SYSTEM_DESIGN.md](SYSTEM_DESIGN.md) | Full system design with scaling analysis |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Component architecture and deployment |
-| [INTERVIEW_GUIDE.md](INTERVIEW_GUIDE.md) | Google SWE interview Q&A |
+| [FAQ.md](FAQ.md) | System Design Q&A |
 | [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | AWS EC2 deployment guide |
 | [docs/CI_CD.md](docs/CI_CD.md) | GitHub Actions pipeline |
 | [docs/MONITORING.md](docs/MONITORING.md) | Metrics and alerting |
@@ -93,6 +93,6 @@ SPRING_PROFILES_ACTIVE=local mvn spring-boot:run
 - **Base62** short codes with 3-layer collision prevention
 - **Blue-green** deployment on AWS EC2
 
-## Interview Topics Covered
+## Topics Covered
 
 Distributed systems · Caching · Scalability · Rate limiting · System design · Performance engineering · CI/CD · Observability

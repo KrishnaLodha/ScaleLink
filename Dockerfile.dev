@@ -1,14 +1,14 @@
 # Development Dockerfile — fast iteration with Maven cache
-FROM eclipse-temurin:21-jdk-alpine AS builder
+FROM maven:3.9-eclipse-temurin-21 AS builder
 WORKDIR /app
 COPY pom.xml .
-RUN apk add --no-cache maven && mvn dependency:go-offline -q
+RUN mvn dependency:go-offline -q
 COPY src ./src
 RUN mvn package -DskipTests -q
 
-FROM eclipse-temurin:21-jre-alpine
+FROM eclipse-temurin:21-jre
 WORKDIR /app
-RUN addgroup -S scalink && adduser -S scalink -G scalink
+RUN addgroup --system scalink && adduser --system --ingroup scalink scalink
 USER scalink
 COPY --from=builder /app/target/scalink-*.jar app.jar
 EXPOSE 8080

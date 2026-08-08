@@ -14,7 +14,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-@Slf4j
+
 @Service
 @Profile("!test")
 public class RateLimitService {
@@ -90,4 +90,5 @@ public class RateLimitService {
         }
         return request.getRemoteAddr();
     }
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(RateLimitService.class);
 }

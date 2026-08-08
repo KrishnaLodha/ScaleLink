@@ -16,7 +16,7 @@ import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-@Slf4j
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -136,4 +136,5 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(status).body(body);
     }
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GlobalExceptionHandler.class);
 }

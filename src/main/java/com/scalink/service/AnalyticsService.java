@@ -160,4 +160,5 @@ public class AnalyticsService {
             throw new ForbiddenOperationException("You do not have permission to view analytics for this URL");
         }
     }
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(AnalyticsService.class);
 }

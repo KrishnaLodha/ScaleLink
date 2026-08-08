@@ -89,4 +89,5 @@ public class UrlCacheService {
         double total = hits + misses;
         return total == 0 ? 0.0 : hits / total;
     }
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(UrlCacheService.class);
 }

@@ -20,11 +20,6 @@ import java.time.Instant;
 
 @Entity
 @Table(name = "urls")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class Url {
 
     @Id
@@ -45,8 +40,7 @@ public class Url {
     private User user;
 
     @Column(name = "click_count", nullable = false)
-    @Builder.Default
-    private Long clickCount = 0L;
+        private Long clickCount = 0L;
 
     @Column(name = "expiration_date")
     private Instant expirationDate;
@@ -70,5 +64,43 @@ public class Url {
 
     public String getRedirectKey() {
         return customAlias != null ? customAlias : shortCode;
+    }
+    public Long getId() { return this.id; }
+    public String getOriginalUrl() { return this.originalUrl; }
+    public String getShortCode() { return this.shortCode; }
+    public String getCustomAlias() { return this.customAlias; }
+    public User getUser() { return this.user; }
+    public Long getClickCount() { return this.clickCount; }
+    public Instant getExpirationDate() { return this.expirationDate; }
+    public Instant getCreatedAt() { return this.createdAt; }
+    public void setId(Long id) { this.id = id; }
+    public void setOriginalUrl(String originalUrl) { this.originalUrl = originalUrl; }
+    public void setShortCode(String shortCode) { this.shortCode = shortCode; }
+    public void setCustomAlias(String customAlias) { this.customAlias = customAlias; }
+    public void setUser(User user) { this.user = user; }
+    public void setClickCount(Long clickCount) { this.clickCount = clickCount; }
+    public void setExpirationDate(Instant expirationDate) { this.expirationDate = expirationDate; }
+    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
+    public Url() {}
+    public Url(Long id, String originalUrl, String shortCode, String customAlias, User user, Long clickCount, Instant expirationDate, Instant createdAt) { this.id = id; this.originalUrl = originalUrl; this.shortCode = shortCode; this.customAlias = customAlias; this.user = user; this.clickCount = clickCount; this.expirationDate = expirationDate; this.createdAt = createdAt; }
+    public static UrlBuilder builder() { return new UrlBuilder(); }
+    public static class UrlBuilder {
+        private Long id;
+        public UrlBuilder id(Long id) { this.id = id; return this; }
+        private String originalUrl;
+        public UrlBuilder originalUrl(String originalUrl) { this.originalUrl = originalUrl; return this; }
+        private String shortCode;
+        public UrlBuilder shortCode(String shortCode) { this.shortCode = shortCode; return this; }
+        private String customAlias;
+        public UrlBuilder customAlias(String customAlias) { this.customAlias = customAlias; return this; }
+        private User user;
+        public UrlBuilder user(User user) { this.user = user; return this; }
+        private Long clickCount;
+        public UrlBuilder clickCount(Long clickCount) { this.clickCount = clickCount; return this; }
+        private Instant expirationDate;
+        public UrlBuilder expirationDate(Instant expirationDate) { this.expirationDate = expirationDate; return this; }
+        private Instant createdAt;
+        public UrlBuilder createdAt(Instant createdAt) { this.createdAt = createdAt; return this; }
+        public Url build() { return new Url(id, originalUrl, shortCode, customAlias, user, clickCount, expirationDate, createdAt); }
     }
 }

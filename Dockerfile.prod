@@ -1,5 +1,5 @@
 # Production Dockerfile — optimized multi-stage build
-FROM eclipse-temurin:21-jdk-alpine AS builder
+FROM eclipse-temurin:17-jdk-alpine AS builder
 WORKDIR /app
 COPY pom.xml .
 COPY src ./src
@@ -7,7 +7,7 @@ RUN apk add --no-cache maven && \
     mvn clean package -DskipTests -q && \
     mv target/scalink-*.jar app.jar
 
-FROM eclipse-temurin:21-jre-alpine AS runtime
+FROM eclipse-temurin:17-jre-alpine AS runtime
 WORKDIR /app
 RUN apk add --no-cache wget && \
     addgroup -S scalink && adduser -S scalink -G scalink && \

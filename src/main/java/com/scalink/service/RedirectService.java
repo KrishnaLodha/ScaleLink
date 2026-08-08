@@ -9,7 +9,6 @@ import com.scalink.exception.UrlExpiredException;
 import com.scalink.util.IpHasher;
 import com.scalink.util.ParsedUserAgent;
 import com.scalink.util.ReservedPaths;
-import com.scalink.util.UserAgentParser;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,7 +73,7 @@ public class RedirectService {
     }
 
     private void publishAnalytics(Long urlId, HttpServletRequest request) {
-        ParsedUserAgent parsed = UserAgentParser.parse(request.getHeader("User-Agent"));
+        ParsedUserAgent parsed = ParsedUserAgent.parse(request.getHeader("User-Agent"));
         ClickEvent event = ClickEvent.builder()
                 .urlId(urlId)
                 .country(request.getHeader("CF-IPCountry"))
